@@ -1,0 +1,6 @@
+build/
+files/
+__pycache__/
+*.csv
+converstion/*.csv
+conversion/build
