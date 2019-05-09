@@ -42,18 +42,19 @@ for i in range(len(files)):
         R1 = 25000
         R2 = 16000
         VCC = 3.3
+        T = 25 + 273.15
 
         ntc_resistance = [(R1*R2*(VCC - x))/(x*(R1 + R2) - VCC*R2) for x in voltage]
-        a = [(1/25) + (1/3900)*math.log(x/10000) for x in ntc_resistance]
-        ntc = [1/x for x in a]
+        a = [(1/T) + (1/3900)*math.log(x/10000) for x in ntc_resistance]
+        ntc = [(1/x) - 273.15 for x in a]
         # ntc=voltage
         time=[x for x in range(len(voltage))]
 
         plt.figure(3)
         matplotlib.style.use('seaborn')
-        plt.plot(time,ntc_resistance,'k')
+        plt.plot(time,ntc,'k')
         plt.xlabel('Vrijeme[s]')
-        plt.ylabel('Napon[V]')
+        plt.ylabel('Temperatura[°C]')
         plt.title('Karakteristika senzora NTC')
         plt.grid(True)
         continue
