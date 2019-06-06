@@ -269,7 +269,7 @@ class MainWindow(QWidget):
 
         else:
             if m == 'Isključeno':                           # if mode == power off, send zeros and +
-                uart.send_duty_cycle('00000', '+')
+                uart.send_duty_cycle('00000', '0')
             else:                                           # else send duty
                 uart.send_duty_cycle(dc, m)
 

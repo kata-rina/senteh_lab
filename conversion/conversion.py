@@ -104,26 +104,39 @@ for i in range(len(files)):
     if re.search(r"^gnico", files[i]):
         voltage=[(x*3.3)/1023 for x in data]
         gnico=voltage
-        brojnik=[56000*x for x in voltage]
-        nazivnik=[(15.8*5 - x) for x in voltage]
-        otpor=[0 for x in range(len(brojnik))]
-        ad=[0 for x in range(len(brojnik))]
-        a=-412.6
-        b=140.41
-        c=0.00764
-        d=-6.25*pow(10,-17)
-        e=(-1.25)*pow(10, -24)
-        for i in range(len(brojnik)):
-            otpor[i]=brojnik[i]/nazivnik[i]
-            ad[i]=(a+b*pow(1+c*otpor[i], 0.5)+d*pow(otpor[i],5)+e*pow(otpor[i],7))
+
+        VCC = 5
+        R1 = 61.1 * pow(10, 3)
+        R2 = 56 * pow(10, 3)
+        R3 = 732
+        R4 = 39 * pow(10, 3)
+
+        X = VCC * (1 + R4 * (1/R2 + 1/R3) )
+        Y = -VCC * R4 / R2
+
+        RTD = [0 for x in range(len(voltage))]
+        RTD = [( R1 * voltage - Y * R1 )/(X + Y - voltage) for voltage in voltage]
+        # brojnik=[56000*x for x in voltage]
+        # nazivnik=[(15.8*5 - x) for x in voltage]
+        # otpor=[0 for x in range(len(brojnik))]
+        ad=[0 for x in range(len(voltage))]
+        a = -412.6
+        b = 140.41
+        c = 0.00764
+        d = -6.25*pow(10,-17)
+        e = (-1.25)*pow(10, -24)
+
+        for i in range(len(voltage)):
+            # otpor[i]=brojnik[i]/nazivnik[i]
+            ad[i]=( a + b*pow(1+c*RTD[i], 0.5) + d*pow(RTD[i], 5) + e*pow(RTD[i],7))
 
         time=[x for x in range(len(voltage))]
         gnico=ad
         plt.figure(7)
         matplotlib.style.use('seaborn')
-        plt.plot(time,ad,'k')
+        plt.plot(time, gnico,'k')
         plt.xlabel('Vrijeme[s]')
-        plt.ylabel('Napon[V]')
+        plt.ylabel('Temperatura[V]')
         plt.title('Karakteristika senzora G-NICO')
         plt.grid(True)
         continue
