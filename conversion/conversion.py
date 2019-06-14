@@ -23,7 +23,7 @@ for i in range(len(files)):
         continue
 
     if re.search(r"^lm35", files[i]):
-        temp=[x*300/1023 for x in data]
+        temp=[x*330/1023 for x in data]
         lm35=temp
         time=[x for x in range(len(temp))]
 
@@ -60,7 +60,7 @@ for i in range(len(files)):
         continue
 
     if re.search(r"^ntc_max", files[i]):
-        temp=[x*0.125 for x in data]
+        temp=[(x>>5)*0.125 for x in data]
         ntc_max=temp
         time=[x for x in range(len(temp))]
 
@@ -106,19 +106,17 @@ for i in range(len(files)):
         gnico=voltage
 
         VCC = 5
-        R1 = 61.1 * pow(10, 3)
-        R2 = 56 * pow(10, 3)
-        R3 = 732
-        R4 = 39 * pow(10, 3)
+        R1 = 2967
+        R2 = 10000
+        R3 = 3800
+        R4 = 14880
 
         X = VCC * (1 + R4 * (1/R2 + 1/R3) )
         Y = -VCC * R4 / R2
 
         RTD = [0 for x in range(len(voltage))]
         RTD = [( R1 * voltage - Y * R1 )/(X + Y - voltage) for voltage in voltage]
-        # brojnik=[56000*x for x in voltage]
-        # nazivnik=[(15.8*5 - x) for x in voltage]
-        # otpor=[0 for x in range(len(brojnik))]
+
         ad=[0 for x in range(len(voltage))]
         a = -412.6
         b = 140.41
@@ -127,7 +125,6 @@ for i in range(len(files)):
         e = (-1.25)*pow(10, -24)
 
         for i in range(len(voltage)):
-            # otpor[i]=brojnik[i]/nazivnik[i]
             ad[i]=( a + b*pow(1+c*RTD[i], 0.5) + d*pow(RTD[i], 5) + e*pow(RTD[i],7))
 
         time=[x for x in range(len(voltage))]
@@ -136,7 +133,7 @@ for i in range(len(files)):
         matplotlib.style.use('seaborn')
         plt.plot(time, gnico,'k')
         plt.xlabel('Vrijeme[s]')
-        plt.ylabel('Temperatura[V]')
+        plt.ylabel('Temperatura[°C]')
         plt.title('Karakteristika senzora G-NICO')
         plt.grid(True)
         continue
